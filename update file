@@ -28,6 +28,183 @@ local Options = Fluent.Options
 
 do
 
+    local Toggle = Tabs.user:AddToggle("MyToggle", {Title = "เปิด/ปิด การบิน", Default = false })
+
+    Toggle:OnChanged(function()
+        print("Toggle changed:", Options.MyToggle.Value)
+    end)
+
+    Options.MyToggle:SetValue(false)
+
+    local Slider = Tabs.user:AddSlider("Slider", {
+        Title = "ความเร็วบิน",
+        Description = "อยากวิ่งเร็วแค่ไหนก็ลากเลยยยยย",
+        Default = 2,
+        Min = 0,
+        Max = 5,
+        Rounding = 1,
+        Callback = function(Value)
+            print("Slider was changed:", Value)
+        end
+    })
+
+    Slider:OnChanged(function(Value)
+        print("Slider changed:", Value)
+    end)
+
+    Slider:SetValue(3)
+
+    local Toggle = Tabs.user:AddToggle("MyToggle", {Title = "เปิด/ปิด การกระโดดสูง", Default = false })
+
+    Toggle:OnChanged(function()
+        print("Toggle changed:", Options.MyToggle.Value)
+    end)
+
+    Options.MyToggle:SetValue(false)
+
+    local Slider = Tabs.user:AddSlider("Slider", {
+        Title = "ความเร็ววิ่ง",
+        Description = "อยากวิ่งเร็วแค่ไหนก็ลากเลยยยยย",
+        Default = 2,
+        Min = 0,
+        Max = 5,
+        Rounding = 1,
+        Callback = function(Value)
+            print("Slider was changed:", Value)
+        end
+    })
+
+    Slider:OnChanged(function(Value)
+        print("Slider changed:", Value)
+    end)
+
+    Slider:SetValue(3)
+
+    local Toggle = Tabs.user:AddToggle("MyToggle", {Title = "เปิด/ปิด noclip", Default = false })
+
+    Toggle:OnChanged(function()
+        print("Toggle changed:", Options.MyToggle.Value)
+    end)
+
+    local Toggle = Tabs.user:AddToggle("MyToggle", {Title = "เปิด/ปิด inf jump", Default = false })
+
+    Toggle:OnChanged(function()
+        print("Toggle changed:", Options.MyToggle.Value)
+    end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
