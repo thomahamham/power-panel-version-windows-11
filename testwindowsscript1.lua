@@ -51,8 +51,8 @@ do
         Description = "Very important button",
         Callback = function()
             Window:Dialog({
-                Title = "Title",
-                Content = "This is a dialog",
+                Title = "หากกดconfirm ให้กดเพียงแค่1ที",
+                Content = "code runscript",
                 Buttons = {
                     {
                         Title = "Confirm",
@@ -77,8 +77,8 @@ do
         Description = "Very important button",
         Callback = function()
             Window:Dialog({
-                Title = "Title",
-                Content = "This is a dialog",
+                Title = "หากกดconfirm ให้กดเพียงแค่1ที",
+                Content = "code runscript",
                 Buttons = {
                     {
                         Title = "Confirm",
@@ -103,8 +103,8 @@ do
         Description = "Very important button",
         Callback = function()
             Window:Dialog({
-                Title = "Title",
-                Content = "This is a dialog",
+                Title = "หากกดconfirm ให้กดเพียงแค่1ที",
+                Content = "code runscript",
                 Buttons = {
                     {
                         Title = "Confirm",
