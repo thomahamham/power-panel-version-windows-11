@@ -1,27 +1,29 @@
--- ใส่ UserId ของคนที่อนุญาตให้ใช้
-local Whitelist = {
-    5643522227, -- ใส่ UserId ของคนแรก
-    1510539372, -- ใส่ UserId ของคนที่สอง
-}
+-- URL ไฟล์ version บน GitHub (ควรมีไฟล์ version.txt หรือ .json)
+local versionUrl = "https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/version.txt"
+local currentVersion = "1.1" -- เวอร์ชันปัจจุบันของสคริปต์
 
--- ตรวจสอบว่าผู้เล่นอยู่ใน whitelist หรือไม่
-local function IsWhitelisted(player)
-    for _, id in pairs(Whitelist) do
-        if player.UserId == id then
-            return true
+-- ฟังก์ชันตรวจสอบเวอร์ชัน
+local function CheckVersion()
+    local success, response = pcall(function()
+        return game:HttpGet(versionUrl)
+    end)
+    if success then
+        local latestVersion = response:match("%S+")
+        if latestVersion ~= currentVersion then
+            game.Players.LocalPlayer:Kick("Script เก่าเกินไป! โปรดหาสคริปต์ใหม่ (เวอร์ชันล่าสุด: " .. latestVersion .. ")")
+            return false
         end
+    else
+        warn("ไม่สามารถเช็คเวอร์ชันได้: " .. tostring(response))
     end
-    return false
+    return true
 end
 
--- ตรวจสอบผู้เล่น
-local player = game.Players.LocalPlayer
-if not IsWhitelisted(player) then
-    game.Players.LocalPlayer:Kick("คุณไม่ได้รับอนุญาตให้ใช้สคริปต์นี้!")
-    return -- หยุดสคริปต์ไม่ให้โหลดต่อ
+-- เรียกเช็คเวอร์ชันก่อนรันโค้ดอื่น
+if not CheckVersion() then
+    return -- หยุดโหลดสคริปต์ถ้าเวอร์ชันเก่า
 end
 
--- ส่วนโค้ดสคริปต์ทั้งหมดของคุณให้อยู่หลังจากนี้
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
