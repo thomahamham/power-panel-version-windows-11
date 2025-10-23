@@ -1,0 +1,244 @@
+-- โหลด Library Fluent และ Addons
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/InterfaceManager.lua"))()
+
+-- หน้าต่างหลัก
+local Window = Fluent:CreateWindow({
+    Title = "🌀 Power Panel Windows 11 English " .. Fluent.Version,
+    SubTitle = "power panel ver 1.0",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+-- สร้างแท็บทั้งหมด
+local Tabs = {
+    user = Window:AddTab({ Title = "user", Icon = "" }),
+    tp = Window:AddTab({ Title = "tp", Icon = "" }),
+    night = Window:AddTab({ Title = "99 night other script", Icon = "" }),
+    other = Window:AddTab({ Title = "other script", Icon = "" }),
+    up = Window:AddTab({ Title = "update", Icon = "" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "" }),
+    cradit = Window:AddTab({ Title = "credit", Icon = "" }),
+    Main = Window:AddTab({ Title = "fordeveloper", Icon = "" }),
+}
+
+-- ตัวแปรหลัก
+local Player = game.Players.LocalPlayer
+local Flying = false
+
+--------------------------------------------------------------------------------------------------------------
+-- USER TAB
+--------------------------------------------------------------------------------------------------------------
+do
+    -- Toggle การบิน
+    local ToggleFlight = Tabs.user:AddToggle("ToggleFlight", { Title = "เปิด/ปิด การบิน", Default = false })
+
+    -- Slider ความเร็วบิน
+    local SliderFlySpeed = Tabs.user:AddSlider("SliderFlySpeed", {
+        Title = "ความเร็วบิน",
+        Description = "อยากบินเร็วแค่ไหนก็ลากเลยยย",
+        Default = 5,
+        Min = 0.5,
+        Max = 10,
+        Rounding = 1
+    })
+
+    -- Slider ความเร็ววิ่ง
+    local SliderRunSpeed = Tabs.user:AddSlider("SliderRunSpeed", {
+        Title = "ความเร็ววิ่ง",
+        Description = "อยากวิ่งเร็วแค่ไหนก็ลากเลยย",
+        Default = 50,
+        Min = 16,
+        Max = 100,
+        Rounding = 1
+    })
+
+    -- Toggle noclip
+    local ToggleNoClip = Tabs.user:AddToggle("ToggleNoClip", { Title = "เปิด/ปิด noclip", Default = false })
+
+    -- Toggle กระโดดไม่จำกัด
+    local ToggleInfJump = Tabs.user:AddToggle("ToggleInfJump", { Title = "เปิด/ปิด inf jump", Default = false })
+
+    --------------------------------------------------------------------------------------------------------------
+    -- LOGIC
+    --------------------------------------------------------------------------------------------------------------
+
+    -- ระบบบิน
+    ToggleFlight:OnChanged(function(Value)
+        Flying = Value
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+        local HRP = Character:FindFirstChild("HumanoidRootPart")
+
+        if not Humanoid or not HRP then return end
+
+        if Flying then
+            Humanoid.PlatformStand = false
+            local uis = game:GetService("UserInputService")
+            local camera = workspace.CurrentCamera
+
+            task.spawn(function()
+                while Flying and task.wait() do
+                    if not Character or not HRP then break end
+
+                    local moveDir = Vector3.new()
+                    if uis:IsKeyDown(Enum.KeyCode.W) then moveDir += camera.CFrame.LookVector end
+                    if uis:IsKeyDown(Enum.KeyCode.S) then moveDir -= camera.CFrame.LookVector end
+                    if uis:IsKeyDown(Enum.KeyCode.A) then moveDir -= camera.CFrame.RightVector end
+                    if uis:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
+                    if uis:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0, 1, 0) end
+                    if uis:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0, 1, 0) end
+
+                    if moveDir.Magnitude > 0 then
+                        local speed = SliderFlySpeed.Value * 5
+                        HRP.Velocity = moveDir.Unit * speed * 10
+                    else
+                        HRP.Velocity = Vector3.new(0, 0, 0)
+                    end
+                end
+                HRP.Velocity = Vector3.new(0, 0, 0)
+            end)
+        else
+            Humanoid.PlatformStand = false
+            Humanoid.WalkSpeed = SliderRunSpeed.Value
+        end
+    end)
+
+    -- ✅ ปรับความเร็ววิ่งจริง (อยู่นอก OnChanged ของบิน)
+    SliderRunSpeed:OnChanged(function(Value)
+        local Character = Player.Character
+        if not Character then return end
+        local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+        if Humanoid and not Flying then
+            Humanoid.WalkSpeed = Value
+        end
+    end)
+
+    -- รีเซ็ตตัวละครแล้วคงค่าความเร็วไว้
+    Player.CharacterAdded:Connect(function(Char)
+        task.wait(1)
+        local Humanoid = Char:FindFirstChildOfClass("Humanoid")
+        if Humanoid then
+            Humanoid.WalkSpeed = SliderRunSpeed.Value
+        end
+    end)
+
+    -- noclip
+    local noclipConn
+    ToggleNoClip:OnChanged(function(Value)
+        if Value then
+            noclipConn = game:GetService("RunService").Stepped:Connect(function()
+                for _, part in pairs(Player.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end)
+        elseif noclipConn then
+            noclipConn:Disconnect()
+        end
+    end)
+
+    -- infinite jump
+    local infJumpConn
+    ToggleInfJump:OnChanged(function(Value)
+        if Value then
+            infJumpConn = game:GetService("UserInputService").JumpRequest:Connect(function()
+                local Humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+                if Humanoid then Humanoid:ChangeState("Jumping") end
+            end)
+        elseif infJumpConn then
+            infJumpConn:Disconnect()
+        end
+    end)
+end
+
+--------------------------------------------------------------------------------------------------------------
+-- NIGHT TAB
+--------------------------------------------------------------------------------------------------------------
+Tabs.night:AddButton({
+    Title = "รัน somtank",
+    Description = "Very important button",
+    Callback = function()
+        Window:Dialog({
+            Title = "ยืนยันการรันสคริปต์",
+            Content = "หากกด Confirm ให้กดเพียงแค่ 1 ครั้ง",
+            Buttons = {
+                { Title = "Confirm", Callback = function()
+                    loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
+                end },
+                { Title = "Cancel" }
+            }
+        })
+    end
+})
+
+Tabs.night:AddButton({
+    Title = "รัน voidware",
+    Callback = function()
+        Window:Dialog({
+            Title = "ยืนยันการรันสคริปต์",
+            Content = "หากกด Confirm ให้กดเพียงแค่ 1 ครั้ง",
+            Buttons = {
+                { Title = "Confirm", Callback = function()
+                    loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
+                end },
+                { Title = "Cancel" }
+            }
+        })
+    end
+})
+
+Tabs.night:AddButton({
+    Title = "รัน foxname",
+    Callback = function()
+        Window:Dialog({
+            Title = "ยืนยันการรันสคริปต์",
+            Content = "หากกด Confirm ให้กดเพียงแค่ 1 ครั้ง",
+            Buttons = {
+                { Title = "Confirm", Callback = function()
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
+                end },
+                { Title = "Cancel" }
+            }
+        })
+    end
+})
+
+--------------------------------------------------------------------------------------------------------------
+-- MAIN TAB
+--------------------------------------------------------------------------------------------------------------
+Fluent:Notify({
+    Title = "Power Panel",
+    Content = "Script loaded successfully!",
+    Duration = 5
+})
+
+Tabs.Main:AddParagraph({ Title = "Paragraph", Content = "This is a paragraph.\nSecond line!" })
+
+
+--------------------------------------------------------------------------------------------------------------
+-- SYSTEM CONFIG
+--------------------------------------------------------------------------------------------------------------
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+
+Window:SelectTab(1)
+
+Fluent:Notify({
+    Title = "Power Panel",
+    Content = "The script has been fully loaded.",
+    Duration = 8
+})
+
+SaveManager:LoadAutoloadConfig()
