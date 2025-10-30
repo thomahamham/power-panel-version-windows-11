@@ -1,8 +1,60 @@
+
 -- โหลด Library Fluent และ Addons
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/InterfaceManager.lua"))()
 local ScriptVersion = "1.0"
+local VersionUrl = "https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/version.txt" -- ไฟล์ version.txt บน GitHub
+
+local function CheckForUpdate()
+    local success, response = pcall(function()
+        return game:HttpGet(VersionUrl)
+    end)
+
+    if not success then
+        Fluent:Notify({
+            Title = "อัปเดต",
+            Content = "ไม่สามารถเชื่อมต่อ GitHub เพื่อตรวจสอบเวอร์ชั่นได้",
+            Duration = 6
+        })
+        return
+    end
+
+    local latestVersion = response:match("^%s*(.-)%s*$") -- ตัดช่องว่าง
+
+    if latestVersion and latestVersion ~= "" and latestVersion ~= ScriptVersion then
+        Window:Dialog({
+            Title = "🔄 มีเวอร์ชั่นใหม่!",
+            Content = "เวอร์ชั่นปัจจุบัน: " .. ScriptVersion .. "\nเวอร์ชั่นล่าสุด: " .. latestVersion .. "\n\nกรุณาไปรับสคริปต์ล่าสุดจาก GitHub!",
+            Buttons = {
+                {
+                    Title = "ไปที่ GitHub",
+                    Callback = function()
+                        -- เปิดลิงก์ในเบราว์เซอร์ (Roblox รองรับในบาง Executor)
+                        if syn and syn.request then
+                            syn.request({ Url = "https://github.com/thomahamham/power-panel-version-windows-11", Method = "GET" })
+                        else
+                            Fluent:Notify({ Title = "ลิงก์", Content = "https://github.com/thomahamham/power-panel-version-windows-11", Duration = 10 })
+                        end
+                    end
+                },
+                { Title = "ยกเลิก" }
+            }
+        })
+        -- หยุดการโหลด GUI ชั่วคราว (หรือให้ผู้ใช้เลือก)
+        -- return false -- ถ้าต้องการบังคับให้หยุด
+    else
+        Fluent:Notify({
+            Title = "อัปเดต",
+            Content = "คุณใช้เวอร์ชั่นล่าสุดแล้ว! (" .. ScriptVersion .. ")",
+            Duration = 4
+        })
+    end
+end
+
+-- รันตรวจสอบทันที
+CheckForUpdate()
+
 
 -- หน้าต่างหลัก
 local Window = Fluent:CreateWindow({
