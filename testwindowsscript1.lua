@@ -54,7 +54,7 @@ local function CheckForUpdate()
     local latestVersion = response:match("^%s*(.-)%s*$")
     if latestVersion and latestVersion ~= "" and latestVersion ~= ScriptVersion then
         Window:Dialog({
-            Title = "มีเวอร์ชั่นใหม่! หรือได้รับเวอร์ชั่นอนาคต",
+            Title = "โปรดใช้เวอร์ชั่นหลักที่ไม่ใช่ dev version",
             Content = "เวอร์ชั่นปัจจุบัน: " .. ScriptVersion .. "\nเวอร์ชั่นล่าสุด: " .. latestVersion .. "\n\nกรุณาอัปเดตจาก discord!",
             Buttons = {
                 {
