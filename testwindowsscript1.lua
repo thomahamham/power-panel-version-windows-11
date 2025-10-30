@@ -1,9 +1,11 @@
-
 -- โหลด Library Fluent และ Addons
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/InterfaceManager.lua"))()
+
+-- ตั้งค่าเวอร์ชั่น (แค่ครั้งเดียว)
 local ScriptVersion = "1.0"
+local VersionUrl = "https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/versiondev"
 
 -- หน้าต่างหลัก
 local Window = Fluent:CreateWindow({
@@ -32,10 +34,9 @@ local Tabs = {
 local Player = game.Players.LocalPlayer
 local Flying = false
 
--- === ตรวจจับเวอร์ชั่นล่าสุดจาก GitHub ===
-local ScriptVersion = "1.0"
-local VersionUrl = "https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/version.txt" -- ไฟล์ version.txt บน GitHub
-
+--------------------------------------------------------------------------------------------------------------
+-- ตรวจจับเวอร์ชั่น (หลังจาก Window ถูกสร้างแล้ว)
+--------------------------------------------------------------------------------------------------------------
 local function CheckForUpdate()
     local success, response = pcall(function()
         return game:HttpGet(VersionUrl)
@@ -44,35 +45,35 @@ local function CheckForUpdate()
     if not success then
         Fluent:Notify({
             Title = "อัปเดต",
-            Content = "ไม่สามารถเชื่อมต่อ GitHub เพื่อตรวจสอบเวอร์ชั่นได้",
+            Content = "ไม่สามารถเชื่อมต่อ GitHub ได้",
             Duration = 6
         })
         return
     end
 
-    local latestVersion = response:match("^%s*(.-)%s*$") -- ตัดช่องว่าง
-
+    local latestVersion = response:match("^%s*(.-)%s*$")
     if latestVersion and latestVersion ~= "" and latestVersion ~= ScriptVersion then
         Window:Dialog({
-            Title = "🔄 มีเวอร์ชั่นใหม่!",
-            Content = "เวอร์ชั่นปัจจุบัน: " .. ScriptVersion .. "\nเวอร์ชั่นล่าสุด: " .. latestVersion .. "\n\nกรุณาไปรับสคริปต์ล่าสุดจาก GitHub!",
+            Title = "มีเวอร์ชั่นใหม่! หรือได้รับเวอร์ชั่นอนาคต",
+            Content = "เวอร์ชั่นปัจจุบัน: " .. ScriptVersion .. "\nเวอร์ชั่นล่าสุด: " .. latestVersion .. "\n\nกรุณาอัปเดตจาก discord!",
             Buttons = {
                 {
-                    Title = "ไปที่ GitHub",
+                    Title = "ไป discord",
                     Callback = function()
-                        -- เปิดลิงก์ในเบราว์เซอร์ (Roblox รองรับในบาง Executor)
                         if syn and syn.request then
                             syn.request({ Url = "https://github.com/thomahamham/power-panel-version-windows-11", Method = "GET" })
                         else
-                            Fluent:Notify({ Title = "ลิงก์", Content = "https://github.com/thomahamham/power-panel-version-windows-11", Duration = 10 })
+                            Fluent:Notify({
+                                Title = "ลิงก์ discord",
+                                Content = "XejCMrW4p4",
+                                Duration = 60
+                            })
                         end
                     end
                 },
                 { Title = "ยกเลิก" }
             }
         })
-        -- หยุดการโหลด GUI ชั่วคราว (หรือให้ผู้ใช้เลือก)
-        -- return false -- ถ้าต้องการบังคับให้หยุด
     else
         Fluent:Notify({
             Title = "อัปเดต",
@@ -82,15 +83,16 @@ local function CheckForUpdate()
     end
 end
 
--- รันตรวจสอบทันที
-CheckForUpdate()
+-- รันตรวจสอบหลัง GUI พร้อม (ไม่บล็อก)
+task.spawn(CheckForUpdate)
+
 --------------------------------------------------------------------------------------------------------------
 -- USER TAB
 --------------------------------------------------------------------------------------------------------------
 do
     Tabs.user:AddParagraph({
         Title = "วิธีใช้งานแท็บ User",
-        Content = 
+        Content =
             "• เปิด/ปิด การบิน → กด Toggle แล้วใช้ WASD + Space (ขึ้น) / LeftShift (ลง)\n"..
             "• ความเร็วบิน → ลาก Slider เพื่อปรับความเร็วขณะบิน (คูณ 10 อัตโนมัติ)\n"..
             "• ความเร็ววิ่ง → ลาก Slider เพื่อปรับ WalkSpeed (มีผลเมื่อไม่ได้บิน)\n"..
@@ -156,7 +158,6 @@ do
                 local uis = game:GetService("UserInputService")
                 local camera = workspace.CurrentCamera
                 local moveDir = Vector3.new()
-
                 if uis:IsKeyDown(Enum.KeyCode.W) then moveDir += Vector3.new(0, 0, -1) end
                 if uis:IsKeyDown(Enum.KeyCode.S) then moveDir += Vector3.new(0, 0, 1) end
                 if uis:IsKeyDown(Enum.KeyCode.A) then moveDir += Vector3.new(-1, 0, 0) end
@@ -251,7 +252,7 @@ end
 do
     Tabs.tp:AddParagraph({
         Title = "วิธีใช้งานแท็บ TP (Teleport)",
-        Content = 
+        Content =
             "1. เลือกชื่อเพื่อนจาก Dropdown\n"..
             "2. กดปุ่ม 'วาปหาเพื่อน'\n"..
             "→ จะวาปไปยืนด้านหน้าผู้เล่น 3 หน่วย\n"..
@@ -337,7 +338,7 @@ end
 do
     Tabs.night:AddParagraph({
         Title = "วิธีใช้งานแท็บ 99 Night Scripts",
-        Content = 
+        Content =
             "คำเตือน: กด Confirm เพียง 1 ครั้งเท่านั้น!\n"..
             "• รัน somtank → สคริปต์หลักสำหรับ 99 Nights in the Forest\n"..
             "• รัน power panel godmode → Godmode สำหรับ Power Panel\n"..
@@ -401,7 +402,7 @@ end
 do
     Tabs.other:AddParagraph({
         Title = "วิธีใช้งานแท็บ Other Script",
-        Content = 
+        Content =
             "คำเตือน: กด Confirm เพียง 1 ครั้งเท่านั้น!\n"..
             "• รัน freecam → กล้องอิสระ (ใช้สำรวจแมพ)\n"..
             "หลังรันแล้ว GUI ใหม่จะโหลดทับ"
@@ -432,8 +433,8 @@ do
         Title = "วิธีใช้งานแท็บ Update",
         Content = "แจ้งเตือนอัปเดตและแพทช์ต่าง ๆ\n"..
                  "ลิงก์ดาวน์โหลดเวอร์ชันล่าสุด:\n"..
-                 "   • GitHub: [ยังไม่มี]\n"..
-                 "   • Discord: [ยังไม่มี]\n"..
+                 " • GitHub: https://github.com/thomahamham/power-panel-version-windows-11\n"..
+                 " • Discord: [ยังไม่มี]\n"..
                  "ตรวจสอบเวอร์ชันล่าสุดเสมอ!"
     })
 
@@ -457,15 +458,15 @@ end
 do
     Tabs.cradit:AddParagraph({
         Title = "เครดิต",
-        Content = 
-		    "owner: พี่แมน livezala"..	
+        Content =
+            "owner: พี่แมน livezala\n"..
             "Developer: thomahamham\n"..
             "Special Thanks:\n"..
-            "   • MQPS7 (somtank script)\n"..
-            "   • Voidware Team\n"..
-            "   • Foxname Hub\n"..
-            "   • All testers & supporters\n"..
-            "   ラッキー エグゼ | MOBILE TESTER"
+            " • MQPS7 (somtank script)\n"..
+            " • Voidware Team\n"..
+            " • Foxname Hub\n"..
+            " • All testers & supporters\n"..
+            " ラッキー エグゼ | MOBILE TESTER"
     })
 end
 
@@ -475,16 +476,16 @@ end
 do
     Tabs.Main:AddParagraph({
         Title = "สำหรับนักพัฒนา",
-        Content = 
+        Content =
             "แท็บนี้สำหรับ debug และทดสอบฟีเจอร์ใหม่\n"..
             "• ใช้ Print() หรือ warn() เพื่อดู log\n"..
             "• ทดสอบฟีเจอร์ก่อนปล่อยจริง\n"..
             "ปัจจุบัน: ทดสอบระบบบิน + noclip"
     })
 
-    Tabs.Main:AddParagraph({ 
-        Title = "Paragraph", 
-        Content = "This is a paragraph.\nSecond line!" 
+    Tabs.Main:AddParagraph({
+        Title = "Paragraph",
+        Content = "This is a paragraph.\nSecond line!"
     })
 end
 
@@ -499,12 +500,12 @@ InterfaceManager:SetFolder("FluentScriptHub")
 SaveManager:SetFolder("FluentScriptHub/specific-game")
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
-Window:SelectTab(1)
 
+-- เลือกแท็บแรก + แจ้งเตือนโหลดเสร็จ
+Window:SelectTab(1)
 Fluent:Notify({
     Title = "Power Panel",
     Content = "The script has been fully loaded.",
     Duration = 8
 })
-
 SaveManager:LoadAutoloadConfig()
