@@ -4,6 +4,36 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/InterfaceManager.lua"))()
 local ScriptVersion = "1.0"
+
+-- หน้าต่างหลัก
+local Window = Fluent:CreateWindow({
+    Title = "Power Panel Windows 11 English " .. ScriptVersion .. " (เวอร์ชั่นสำรอง " .. Fluent.Version .. ")",
+    SubTitle = "power panel ver " .. ScriptVersion,
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+-- สร้างแท็บทั้งหมด
+local Tabs = {
+    user = Window:AddTab({ Title = "user", Icon = "" }),
+    tp = Window:AddTab({ Title = "tp", Icon = "" }),
+    night = Window:AddTab({ Title = "99 night other script", Icon = "" }),
+    other = Window:AddTab({ Title = "other script", Icon = "" }),
+    up = Window:AddTab({ Title = "update", Icon = "" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "" }),
+    cradit = Window:AddTab({ Title = "credit", Icon = "" }),
+    Main = Window:AddTab({ Title = "fordeveloper", Icon = "" }),
+}
+
+-- ตัวแปรหลัก
+local Player = game.Players.LocalPlayer
+local Flying = false
+
+-- === ตรวจจับเวอร์ชั่นล่าสุดจาก GitHub ===
+local ScriptVersion = "1.0"
 local VersionUrl = "https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/version.txt" -- ไฟล์ version.txt บน GitHub
 
 local function CheckForUpdate()
@@ -54,35 +84,6 @@ end
 
 -- รันตรวจสอบทันที
 CheckForUpdate()
-
-
--- หน้าต่างหลัก
-local Window = Fluent:CreateWindow({
-    Title = "Power Panel Windows 11 English " .. ScriptVersion .. " (เวอร์ชั่นสำรอง " .. Fluent.Version .. ")",
-    SubTitle = "power panel ver " .. ScriptVersion,
-    TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
-    Acrylic = true,
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl
-})
-
--- สร้างแท็บทั้งหมด
-local Tabs = {
-    user = Window:AddTab({ Title = "user", Icon = "" }),
-    tp = Window:AddTab({ Title = "tp", Icon = "" }),
-    night = Window:AddTab({ Title = "99 night other script", Icon = "" }),
-    other = Window:AddTab({ Title = "other script", Icon = "" }),
-    up = Window:AddTab({ Title = "update", Icon = "" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "" }),
-    cradit = Window:AddTab({ Title = "credit", Icon = "" }),
-    Main = Window:AddTab({ Title = "fordeveloper", Icon = "" }),
-}
-
--- ตัวแปรหลัก
-local Player = game.Players.LocalPlayer
-local Flying = false
-
 --------------------------------------------------------------------------------------------------------------
 -- USER TAB
 --------------------------------------------------------------------------------------------------------------
