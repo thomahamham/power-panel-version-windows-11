@@ -1,0 +1,123 @@
+
+-- Roblox Lua script for custom Power Panel intro with Windows 11 logo GUI including text
+
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+gui.ResetOnSpawn = false
+
+-- Darker semi-transparent black background
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+bg.BackgroundTransparency = 0.2  -- Darker than before
+bg.Parent = gui
+
+-- Text "power panel"
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(0.5, 0, 0.2, 0)
+text.Position = UDim2.new(0.25, 0, 0.4, 0)
+text.BackgroundTransparency = 1
+text.Text = "power panel"
+text.TextColor3 = Color3.new(1, 1, 1)
+text.TextScaled = true
+text.Font = Enum.Font.SourceSansBold
+text.Parent = gui
+text.TextTransparency = 1  -- Start invisible
+
+-- Function to fade in text
+local function fadeIn(element, duration)
+    local tweenService = game:GetService("TweenService")
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
+    local goal = {TextTransparency = 0}
+    tweenService:Create(element, tweenInfo, goal):Play()
+end
+
+-- Function to fade out text
+local function fadeOut(element, duration)
+    local tweenService = game:GetService("TweenService")
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
+    local goal = {TextTransparency = 1}
+    tweenService:Create(element, tweenInfo, goal):Play()
+end
+
+-- Windows 11 logo frame (icon + text)
+local logoFrame = Instance.new("Frame")
+logoFrame.Size = UDim2.new(0.6, 0, 0.15, 0)  -- Wider to include text
+logoFrame.Position = UDim2.new(0.2, 0, 0.4, 0)
+logoFrame.BackgroundTransparency = 1
+logoFrame.Parent = gui
+
+-- Icon part: blue square with black cross
+local iconFrame = Instance.new("Frame")
+iconFrame.Size = UDim2.new(0.25, 0, 1, 0)  -- Square relative to logoFrame height
+iconFrame.BackgroundColor3 = Color3.fromRGB(0, 120, 215)  -- Windows blue
+iconFrame.BackgroundTransparency = 1  -- Start invisible
+iconFrame.Parent = logoFrame
+
+local verticalLine = Instance.new("Frame")
+verticalLine.Size = UDim2.new(0.03, 0, 1, 0)  -- Thin vertical
+verticalLine.Position = UDim2.new(0.485, 0, 0, 0)
+verticalLine.BackgroundColor3 = Color3.new(0, 0, 0)
+verticalLine.BackgroundTransparency = 1
+verticalLine.Parent = iconFrame
+
+local horizontalLine = Instance.new("Frame")
+horizontalLine.Size = UDim2.new(1, 0, 0.03, 0)  -- Thin horizontal
+horizontalLine.Position = UDim2.new(0, 0, 0.485, 0)
+horizontalLine.BackgroundColor3 = Color3.new(0, 0, 0)
+horizontalLine.BackgroundTransparency = 1
+horizontalLine.Parent = iconFrame
+
+-- Text "Windows 11"
+local logoText = Instance.new("TextLabel")
+logoText.Size = UDim2.new(0.7, 0, 1, 0)
+logoText.Position = UDim2.new(0.3, 0, 0, 0)  -- Next to icon
+logoText.BackgroundTransparency = 1
+logoText.Text = "Windows 11"
+logoText.TextColor3 = Color3.fromRGB(0, 120, 215)
+logoText.TextScaled = true
+logoText.Font = Enum.Font.ArialBold
+logoText.TextTransparency = 1  -- Start invisible
+logoText.Parent = logoFrame
+
+-- Function to fade in logo (icon, lines, text)
+local function fadeInLogo(duration)
+    local tweenService = game:GetService("TweenService")
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
+    local bgGoal = {BackgroundTransparency = 0}
+    local textGoal = {TextTransparency = 0}
+    tweenService:Create(iconFrame, tweenInfo, bgGoal):Play()
+    tweenService:Create(verticalLine, tweenInfo, bgGoal):Play()
+    tweenService:Create(horizontalLine, tweenInfo, bgGoal):Play()
+    tweenService:Create(logoText, tweenInfo, textGoal):Play()
+end
+
+-- Function to fade out logo
+local function fadeOutLogo(duration)
+    local tweenService = game:GetService("TweenService")
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
+    local bgGoal = {BackgroundTransparency = 1}
+    local textGoal = {TextTransparency = 1}
+    tweenService:Create(iconFrame, tweenInfo, bgGoal):Play()
+    tweenService:Create(verticalLine, tweenInfo, bgGoal):Play()
+    tweenService:Create(horizontalLine, tweenInfo, bgGoal):Play()
+    tweenService:Create(logoText, tweenInfo, textGoal):Play()
+end
+
+-- Animation sequence
+wait(1)  -- Short delay
+fadeIn(text, 1)  -- Fade in text over 1 second
+wait(2)  -- Display text for 2 seconds
+fadeOut(text, 1)  -- Fade out text over 1 second
+wait(1)  -- Short delay after fade out
+fadeInLogo(1)  -- Fade in logo over 1 second
+wait(2)  -- Display logo for 2 seconds
+fadeOutLogo(1)  -- Fade out logo over 1 second
+
+-- Optionally, remove the GUI after everything
+wait(1)
+gui:Destroy()
+wait(3)
+loadstring(game:HttpGet('https://raw.githubusercontent.com/thomahamham/power-panel-version-windows-11/refs/heads/main/last%20version%202'))()
