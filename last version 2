@@ -53,7 +53,7 @@ do
     local SliderFlySpeed = Tabs.user:AddSlider("SliderFlySpeed", {
         Title = "ความเร็วบิน",
         Description = "อยากบินเร็วแค่ไหนก็ลากเลยยย",
-        Default = 5, Min = 0.5, Max = 10, Rounding = 1
+        Default = 5, Min = 0.5, Max = 1000, Rounding = 1
     })
     local SliderRunSpeed = Tabs.user:AddSlider("SliderRunSpeed", {
         Title = "ความเร็ววิ่ง",
