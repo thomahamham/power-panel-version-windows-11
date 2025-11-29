@@ -1,3 +1,128 @@
+local Players = game:GetService("Players")
+local RS = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+local duration = 5 -- seconds for the loading animation
+local totalLines = 2000
+
+-- Create Intro GUI
+local introGui = Instance.new("ScreenGui")
+introGui.Name = "PowerPanelIntro"
+introGui.IgnoreGuiInset = true
+introGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1, 0, 1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 1
+frame.Parent = introGui
+
+local title = Instance.new("TextLabel")
+title.Text = "Power Panel Windows 11"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 50
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Position = UDim2.new(0.5, 0, 0.3, 0)
+title.AnchorPoint = Vector2.new(0.5, 0.5)
+title.TextTransparency = 0
+title.Parent = frame
+
+local progressFrame = Instance.new("Frame")
+progressFrame.Size = UDim2.new(0.5, 0, 0.05, 0)
+progressFrame.Position = UDim2.new(0.25, 0, 0.5, 0)
+progressFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+progressFrame.Parent = frame
+
+local uicornerProgress = Instance.new("UICorner")
+uicornerProgress.CornerRadius = UDim.new(0, 10)
+uicornerProgress.Parent = progressFrame
+
+local fill = Instance.new("Frame")
+fill.Size = UDim2.new(0, 0, 1, 0)
+fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+fill.Parent = progressFrame
+
+local uicornerFill = Instance.new("UICorner")
+uicornerFill.CornerRadius = UDim.new(0, 10)
+uicornerFill.Parent = fill
+
+local lineText = Instance.new("TextLabel")
+lineText.Text = "Loading line 0 / " .. totalLines
+lineText.Font = Enum.Font.Gotham
+lineText.TextSize = 30
+lineText.TextColor3 = Color3.fromRGB(255, 255, 255)
+lineText.BackgroundTransparency = 1
+lineText.Position = UDim2.new(0.5, 0, 0.55, 0)
+lineText.AnchorPoint = Vector2.new(0.5, 0)
+lineText.Parent = frame
+
+-- Fade in the background
+TweenService:Create(
+    frame,
+    TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    {BackgroundTransparency = 0}
+):Play()
+
+task.wait(1) -- รอให้ fade in จบก่อน
+
+local startTime = tick() -- เริ่มจับเวลาหลังจาก fade in เสร็จ
+
+-- Loading animation loop
+local connection
+connection = RS.Heartbeat:Connect(function()
+    local elapsed = tick() - startTime
+    local progress = math.min(elapsed / duration, 1)
+
+    fill.Size = UDim2.new(progress, 0, 1, 0)
+
+    local currentLine = math.floor(progress * totalLines)
+    lineText.Text = "Loading line " .. currentLine .. " / " .. totalLines
+
+    if progress >= 1 then
+        connection:Disconnect()
+
+        -- Fade out ทุกอย่าง
+        TweenService:Create(
+            frame,
+            TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundTransparency = 1}
+        ):Play()
+
+        TweenService:Create(
+            title,
+            TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {TextTransparency = 1}
+        ):Play()
+
+        TweenService:Create(
+            lineText,
+            TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {TextTransparency = 1}
+        ):Play()
+
+        TweenService:Create(
+            progressFrame,
+            TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundTransparency = 1}
+        ):Play()
+
+        TweenService:Create(
+            fill,
+            TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundTransparency = 1}
+        ):Play()
+
+        task.wait(1)
+        introGui:Destroy()
+    end
+end)
+
+wait(5)
+
+-- The rest of the script loads after the intro starts (runs in parallel for smoothness)
+
 -- โหลด Library Fluent และ Addons
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
@@ -20,8 +145,8 @@ local Window = Fluent:CreateWindow({
 
 -- สร้างแท็บทั้งหมด
 local Tabs = {
-    common = Window:AddTab({ Title = "Common", Icon = "" }),
     user = Window:AddTab({ Title = "User", Icon = "" }),
+    common = Window:AddTab({ Title = "Common", Icon = "" }),
     tp = Window:AddTab({ Title = "TP", Icon = "" }),
     places = Window:AddTab({ Title = "Places", Icon = "" }),
     killaura = Window:AddTab({ Title = "Kill Aura", Icon = "" }),
@@ -43,6 +168,7 @@ local UIS = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
+local scriptStartTime = os.date("%Y-%m-%d %H:%M:%S")
 local char = player.Character or player.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 local humanoid = char:WaitForChild("Humanoid")
@@ -247,6 +373,21 @@ end
 -- USER TAB (Merged with Rayfield's fly/speed)
 --------------------------------------------------------------------------------------------------------------
 do
+    Tabs.user:AddParagraph({
+        Title = "Character Profile",
+        Content = player.DisplayName .. " (@" .. player.Name .. ")"
+    })
+
+    Tabs.user:AddParagraph({
+        Title = "User ID",
+        Content = tostring(player.UserId)
+    })
+
+    Tabs.user:AddParagraph({
+        Title = "Script Run Time",
+        Content = scriptStartTime
+    })
+
     Tabs.user:AddParagraph({
         Title = "User Controls",
         Content = "Fly, speed, noclip, inf jump"
@@ -528,7 +669,7 @@ do
     }):OnChanged(function(val) killAuraRange = val end)
 
     -- Status label, but Fluent no label, use paragraph
-    local statusPara = Tabs.killaura:AddParagraph({Title = "Status", Content = "Kills: 0 | Range: 150 | Speed: 0s | Weapon: Ready"})
+    local statusPara = Tabs.killaura:AddParagraph({Title = "Status", Content = " kills: 0 | Range: 150 | Speed: 0s | Weapon: Ready"})
 
     Tabs.killaura:AddButton({
         Title = "Reset Stats",
@@ -1163,6 +1304,14 @@ end
 --------------------------------------------------------------------------------------------------------------
 -- SYSTEM CONFIG
 --------------------------------------------------------------------------------------------------------------
+local isThai = false
+Tabs.Settings:AddButton({
+    Title = "Change Language",
+    Callback = function()
+        isThai = not isThai
+        Fluent:Notify({Title = "Language Changed", Content = isThai and "เป็นภาษาไทย" or "To English", Duration = 3})
+    end
+})
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
